@@ -26,25 +26,44 @@ const Footer = () => {
             <div>
               <h4>Компанія</h4>
               <ul>
-                <li><Link to="/info#company">Про нас</Link></li>
-                <li><Link to="/info#company">Кар'єри</Link></li>
-                <li><Link to="/info#company">Преса</Link></li>
+                <li><Link to="/info#company"
+                    onClick={() => {
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}>Про нас</Link></li>
+                <li><Link to="/info#company"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>Кар'єри</Link></li>
+                <li><Link to="/info#company"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>Преса</Link></li>
               </ul>
             </div>
             <div>
               <h4>Інформація</h4>
               <ul>
-                <li><Link to="/info#info">Блог</Link></li>
-                <li><Link to="/info#info">Ціни</Link></li>
-                <li><Link to="/info#info">Партнери</Link></li>
+                <li><Link to="/info#info"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>Блог</Link></li>
+                <li><Link to="/info#info"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>Ціни</Link></li>
+                <li><Link to="/info#info"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>Партнери</Link></li>
               </ul>
             </div>
             <div>
               <h4>Help</h4>
               <ul>
-                <li><Link to="/info#help">Підтримка</Link></li>
-                <li><Link to="/info#help">Контакти</Link></li>
-                <li><Link to="/info#help">FAQs</Link></li>
+                <li><Link to="/info#help"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>Підтримка</Link></li>
+                <li><Link to="/info#help"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>Контакти</Link></li>
+                <li><Link to="/info#help"    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}>FAQs</Link></li>
               </ul>
             </div>
           </div>

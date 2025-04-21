@@ -643,9 +643,7 @@ function CoursesPage() {
         <span className="close-modal" onClick={() => setIsFilterModalOpen(false)}>&times;</span>
       </div>
       <div className="modal-body">
-      <div className="sidebar">
       <div className="filters-header2">
-  <h3>Фільтри</h3>
   {areFiltersActive && (
     <i
       className="bx bx-trash clear-icon2"
@@ -728,9 +726,9 @@ function CoursesPage() {
             />
             Показати лише безкоштовні курси
           </label>
-        </div>
       </div>
       </div>
+
     </div>
   </div>
 )}
@@ -739,28 +737,32 @@ function CoursesPage() {
       <div className="search-sort-wrapper">
 
 
+      <div className="search-wrapper-inline">
+  <i
+    className="bx bx-filter-alt filter-icon-inside"
+    onClick={() => setIsFilterModalOpen(true)}
+    title="Фільтри"
+  ></i>
 
-  <div className="search-wrapper-inline">
-    <input
-      type="text"
-      placeholder="Пошук курсів"
-      className="search-input-inline"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-    />
-    {searchQuery && (
-      <span
-        className="clear-icon"
-        onClick={() => setSearchQuery("")}
-        title="Очистити"
-      >
-        &times;
-      </span>
-    )}
-  </div>
-  <button className="mobile-filter-button" onClick={() => setIsFilterModalOpen(true)}>
-    Фільтри
-  </button>
+  <input
+    type="text"
+    placeholder="Пошук курсів"
+    className="search-input-inline"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+  />
+
+  {searchQuery && (
+    <span
+      className="clear-icon"
+      onClick={() => setSearchQuery("")}
+      title="Очистити"
+    >
+      &times;
+    </span>
+  )}
+</div>
+
   <div className="sort-inline">
     <label htmlFor="sort">Сортувати за: </label>
     <select

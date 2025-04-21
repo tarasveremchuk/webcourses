@@ -18,9 +18,17 @@ const Header = () => {
 
         <nav className="navbar">
           <ul>
-            <li><Link to="/">Головна</Link></li>
-            <li><Link to="/info">Про нас</Link></li>
-            <li><a href="#courses">Курси</a></li>
+          <li>
+  <Link
+    to="/"
+    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}
+  >
+    Головна
+  </Link>
+</li>            <li><Link to="/info">Про нас</Link></li>
+            <li><a href="/courses">Курси</a></li>
             <li>
               <a
                 href="#"
