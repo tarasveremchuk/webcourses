@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 function CourseSection() {
   const navigate = useNavigate();
 
   const courses = [
     {
-      image: "images/Group 338.png",
+      image: process.env.PUBLIC_URL + "/images/Group 338.png",
       category: "Веб-Розробка",
       title: "Основи веб-розробки",
       price: "1 899 грн",
@@ -15,7 +17,7 @@ function CourseSection() {
       students: "1,200 учнів",
     },
     {
-      image: "images/Group 337.png",
+      image: process.env.PUBLIC_URL + "/images/Group 337.png",
       category: "Python",
       title: "Python для початківців",
       price: "1 299 грн",
@@ -24,7 +26,7 @@ function CourseSection() {
       students: "2,000 учнів",
     },
     {
-      image: "images/Group 339.png",
+      image: process.env.PUBLIC_URL + "/images/Group 339.png",
       category: "UI/UX Дизайн2",
       title: "UI/UX Дизайн",
       price: "1 999 грн",
@@ -37,18 +39,34 @@ function CourseSection() {
   const [myCourses, setMyCourses] = useState([]);
 
   useEffect(() => {
-    const storedCourses = JSON.parse(localStorage.getItem("myCourses")) || [];
-    setMyCourses(storedCourses);
+    const fetchCourses = async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) return;
+  
+      const db = getFirestore();
+      const userCoursesRef = collection(db, "users", user.uid, "courses");
+      const snapshot = await getDocs(userCoursesRef);
+  
+      const fetchedCourses = snapshot.docs.map((doc) => doc.data());
+      setMyCourses(fetchedCourses);
+    };
+  
+    fetchCourses();
   }, []);
+  
 
-  const handleJoin = (course) => {
-    const title = course.title;
-    const isAlreadyAdded = myCourses.some((c) => c.title === title);
-    const progress = parseInt(localStorage.getItem(`progress_${title}`)) || 0;
-    const isCompleted = localStorage.getItem(`completed_${title}`) === "true";
-
-    if (isAlreadyAdded || progress > 0 || isCompleted) {
-      navigate(`/course?title=${encodeURIComponent(title)}`);
+  const handleJoin = async (course) => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) return;
+  
+    const db = getFirestore();
+    const courseRef = doc(db, "users", user.uid, "courses", course.title);
+    const courseSnap = await getDoc(courseRef);
+  
+    if (courseSnap.exists()) {
+      navigate(`/course?title=${encodeURIComponent(course.title)}`);
     } else {
       const newCourse = {
         title: course.title,
@@ -57,26 +75,31 @@ function CourseSection() {
         videos: course.videos,
         students: course.students,
         image: course.image,
+        progress: 0,
+        completed: false,
       };
-      const updatedCourses = [...myCourses, newCourse];
-      localStorage.setItem("myCourses", JSON.stringify(updatedCourses));
-      setMyCourses(updatedCourses);
+  
+      await setDoc(courseRef, newCourse);
+      setMyCourses([...myCourses, newCourse]);
     }
   };
+  
 
   const getButtonState = (courseTitle) => {
-    const isAdded = myCourses.some((c) => c.title === courseTitle);
-    const progress = parseInt(localStorage.getItem(`progress_${courseTitle}`)) || 0;
-    const isCompleted = localStorage.getItem(`completed_${courseTitle}`) === "true";
-
-    if (isCompleted) {
-      return { text: "Завершено", background: "#2ecc71", disabled: true };
-    } else if (isAdded || progress > 0) {
-      return { text: "Переглянути", background: "#3498db", disabled: false };
-    } else {
+    const course = myCourses.find((c) => c.title === courseTitle);
+    if (!course) {
       return { text: "Приєднатися", background: "#e67e22", disabled: false };
     }
+  
+    if (course.completed) {
+      return { text: "Завершено", background: "#2ecc71", disabled: true };
+    } else if (course.progress > 0) {
+      return { text: "Переглянути", background: "#3498db", disabled: false };
+    } else {
+      return { text: "Переглянути", background: "#3498db", disabled: false };
+    }
   };
+  
 
   return (
     <section className="course-section" id="courses">
@@ -94,22 +117,22 @@ function CourseSection() {
               <div className="course-info">
                 <p className="category">{course.category}</p>
                 <div className="rating">
-                  <img src="images/Group 345.png" alt="Star" />
+                  <img src={process.env.PUBLIC_URL +"/images/Group 345.png"} alt="Star" />
                 </div>
               </div>
               <h3>{course.title}</h3>
               <p className="price">{course.price}</p>
               <div className="details">
                 <div className="detail-item">
-                  <img src="images/Group.png" alt="Time" />
+                  <img src={process.env.PUBLIC_URL +"/images/Group.png"} alt="Time" />
                   <p>{course.time}</p>
                 </div>
                 <div className="detail-item">
-                  <img src="images/video-svgrepo-com 1.png" alt="Videos" />
+                  <img src={process.env.PUBLIC_URL +"/images/video-svgrepo-com 1.png"} alt="Videos" />
                   <p>{course.videos}</p>
                 </div>
                 <div className="detail-item">
-                  <img src="images/download-svgrepo-com 1.png" alt="Students" />
+                  <img src={process.env.PUBLIC_URL +"/images/download-svgrepo-com 1.png"} alt="Students" />
                   <p>{course.students}</p>
                 </div>
               </div>

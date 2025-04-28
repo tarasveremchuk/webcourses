@@ -581,7 +581,7 @@ function InfoBlock() {
       )}
 
       <div className="side-image">
-        <img src="images/OBJECTS.png" alt="Side visual" />
+        <img src={process.env.PUBLIC_URL +"/images/OBJECTS.png"} alt="Side visual" />
       </div>
     </div>
   );

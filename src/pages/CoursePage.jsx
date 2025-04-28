@@ -1,66 +1,77 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-
-const courseData = {
-  "React.js: Побудова SPA": {
-    description: "Цей курс навчить вас основам HTML, CSS та JavaScript.",
-    videos: [
-      "YEmdHbQBCSQ", "ESnrn1kAD4E", "nGhKIC_7Mkk", "Ez8F0nW6S",
-      "ajdRvxDWH4w", "Zg4-uSjxosE", "UmRtFFSDSFo", "gFWhbjzowrM",
-      "P0XMXqDGttU", "7zcXPCt8Ck0"
-    ]
-  },
-  "Python для початківців": {
-    description: "Вивчайте основи Python та створюйте свої перші програми!",
-    videos: [
-      "PuBadaR8qC4", "PRGkYivK2xI", "BBb_duZIusU", "2gFqUWO-AWM",
-      "NvdSKgQcyuc", "HNChkuE6HyA", "UzOnFDmoJ9w", "5bwpXLHzZRo",
-      "fhxByMe0mq8", "jgNB4GN1UaQ"
-    ]
-  },
-  "UI/UX Дизайн": {
-    description: "Опануйте основи UI/UX дизайну та створюйте круті інтерфейси.",
-    videos: [
-      "O5IXf8qB9U4", "FlwYtS4mIQw", "SKvsPh0qdQU", "h9r_UpOzajA",
-      "yhqEqcWMoqs", "L1V-C5h1ZE1AhlI", "gJ6cvzZ0ewQ", "FdJz-rfMPFk",
-      "O9-t0DtoobA", "pYQBvAYnL1I"
-    ]
-  }
-};
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../services/firebase";
+import { getCourseByTitle, addFeedback } from "../services/courses"; 
+import { loadProgress, saveProgress } from "../services/progress";
+import Pagination from "../components/Pagination"; // пагінація
+import 'boxicons'; // один раз імпортується
 
 function CoursePage() {
   const [searchParams] = useSearchParams();
   const courseTitle = searchParams.get("title");
+  const [user] = useAuthState(auth);
 
+  const [course, setCourse] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [completed, setCompleted] = useState(false);
-
-  const course = courseData[courseTitle];
-  const videos = course?.videos || [];
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [text, setText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 3;
 
   useEffect(() => {
-    if (!courseTitle || !course) return;
+    if (!courseTitle) return;
 
-    const savedIndex = parseInt(localStorage.getItem(`progress_${courseTitle}`)) || 0;
-    const isCompleted = localStorage.getItem(`completed_${courseTitle}`) === "true";
-    setCurrentIndex(savedIndex);
-    setCompleted(isCompleted);
+    const fetchCourseData = async () => {
+      const courseData = await getCourseByTitle(courseTitle);
+      if (courseData) {
+        setCourse(courseData);
+        setFeedbacks(courseData.reviews || []);
+      }
+    };
+
+    fetchCourseData();
   }, [courseTitle]);
 
   useEffect(() => {
-    if (courseTitle && videos.length) {
-      updateProgress(currentIndex);
-    }
-  }, [currentIndex]);
+    if (!courseTitle || !course || !user) return;
+
+    loadProgress(user.uid, courseTitle).then((data) => {
+      if (data) {
+        setCurrentIndex(data.progressIndex);
+        setCompleted(data.completed);
+      }
+    });
+  }, [courseTitle, user, course]);
+
   useEffect(() => {
-    if (currentIndex === videos.length - 1 && !completed) {
-      localStorage.setItem(`completed_${courseTitle}`, "true");
-      setCompleted(true);
+    if (user && courseTitle && course?.videos?.length) {
+      updateProgress(currentIndex);
+      saveProgress(user.uid, courseTitle, currentIndex, completed);
     }
-  }, [currentIndex, videos.length, completed, courseTitle]);
-  
+  }, [currentIndex, completed, courseTitle, user, course]);
+
+  useEffect(() => {
+    if (currentIndex === (course?.videos?.length || 0) - 1 && !completed) {
+      setCompleted(true);
+      if (user) {
+        saveProgress(user.uid, courseTitle, currentIndex, true);
+      }
+    }
+  }, [currentIndex, course, completed, courseTitle, user]);
+
   const updateProgress = (index) => {
-    const percent = ((index + 1) / videos.length) * 100;
+    if (!course?.videos?.length) return;
+  
+    let percent;
+    if (completed) {
+      percent = 100;
+    } else {
+      percent = ((index) / (course.videos.length - 1)) * 100;
+      percent = Math.min(percent, 100);
+    }
+  
     const circle = document.getElementById("progress-ring");
     const text = document.getElementById("progress-text");
     const dashOffset = 283 - (percent / 100) * 283;
@@ -69,43 +80,63 @@ function CoursePage() {
       circle.style.strokeDashoffset = dashOffset;
       text.textContent = `${Math.round(percent)}%`;
     }
-  
-    localStorage.setItem(`progress_${courseTitle}`, index);
   };
   
-
   const nextVideo = () => {
-    if (currentIndex < videos.length - 1) {
+    if (currentIndex < (course?.videos?.length || 0) - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      localStorage.setItem(`completed_${courseTitle}`, "true");
       setCompleted(true);
+      if (user) {
+        saveProgress(user.uid, courseTitle, currentIndex, true);
+      }
     }
   };
 
-  if (!courseTitle || !course) {
+  const maskEmail = (email) => {
+    const [name, domain] = email.split("@");
+    if (name.length <= 4) return "***@" + domain;
+    const start = name.slice(0, 3);
+    const end = name.slice(-2);
+    return `${start}****${end}@${domain}`;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!text.trim()) return;
+
+    const name = user ? maskEmail(user.email) : "Анонім";
+    const newFeedback = { name, text: text.trim() };
+
+    await addFeedback(courseTitle, newFeedback); 
+    setFeedbacks(prev => [newFeedback, ...prev]);
+    setText("");
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(feedbacks.length / pageSize);
+  const startIdx = (currentPage - 1) * pageSize;
+  const displayedFeedbacks = feedbacks.slice(startIdx, startIdx + pageSize);
+
+  if (!course) {
     return (
-      <main className="course-container">
-        <section className="course-info">
-          <h1 className="course-title">Курс не знайдено</h1>
-          <p className="course-description">На жаль, цей курс не існує.</p>
-        </section>
-      </main>
+      <div className="course-container">
+        <h1 className="course-title">Курс не знайдено</h1>
+        <p className="course-description">На жаль, цей курс не існує.</p>
+      </div>
     );
   }
 
   return (
-    <main className="course-container">
-      <section className="course-info">
-        <h1 className="course-title">{courseTitle}</h1>
-        <p className="course-description">{course.description}</p>
-      </section>
+    <div className="course-container">
+      <h1 className="course-title">{course.title}</h1>
+      <p className="course-description">{course.description}</p>
 
       <div className="video-progress-wrapper">
         <section className="video-container">
           <iframe
             id="video-frame"
-            src={`https://www.youtube.com/embed/${videos[currentIndex]}`}
+            src={`https://www.youtube.com/embed/${course.videos[currentIndex]}`}
             allowFullScreen
           ></iframe>
           <button id="next-video-btn" onClick={nextVideo} disabled={completed}>
@@ -142,7 +173,49 @@ function CoursePage() {
           </svg>
         </section>
       </div>
-    </main>
+
+      {/* Відгуки */}
+      <div className="feedback-section">
+        <h2>Відгуки</h2>
+
+        <form onSubmit={handleSubmit} className="feedback-form">
+          <textarea
+            placeholder="Ваш відгук"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="feedback-textarea"
+            required
+          ></textarea>
+          <button type="submit" className="feedback-submit">Надіслати</button>
+        </form>
+
+        <div className="feedback-list">
+          {displayedFeedbacks.length > 0 ? (
+            displayedFeedbacks.map((review, idx) => (
+              <div key={idx} className="feedback-card">
+                <h4 className="feedback-author">{review.name}</h4>
+                <p className="feedback-text">{review.text}</p>
+              </div>
+            ))
+          ) : (
+            <p>Поки що немає відгуків.</p>
+          )}
+        </div>
+
+        {/* Пагінація */}
+        {totalPages > 1 && (
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={(page) => {
+              if (page >= 1 && page <= totalPages) {
+                setCurrentPage(page);
+              }
+            }}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 

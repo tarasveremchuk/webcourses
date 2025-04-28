@@ -5,37 +5,37 @@ const reviews = [
     text: 'Цей курс змінив моє уявлення про програмування! Дуже зрозумілий матеріал і круті викладачі.',
     name: 'Олександр Іваненко',
     course: 'UI/UX дизайн',
-    image: 'images/Ellipse 34.png',
+    image: process.env.PUBLIC_URL + '/images/Ellipse 34.png',
   },
   {
     text: 'Дуже сподобалась подача матеріалу. Всі теми пояснюються на реальних прикладах.',
     name: 'Марина Коваленко',
     course: 'Веб-розробка',
-    image: 'images/Ellipse 34(1).png',
+    image: process.env.PUBLIC_URL + '/images/Ellipse 34(1).png',
   },
   {
     text: 'Після цього курсу я отримав свою першу роботу у сфері IT! Дякую за чудовий досвід.',
     name: 'Артем Дорошенко',
     course: 'Фронтенд-розробка',
-    image: 'images/Ellipse 34(3).png',
+    image: process.env.PUBLIC_URL + '/images/Ellipse 34(3).png',
   },
   {
     text: 'Все доступно і структуровано! Рекомендую всім, хто хоче швидко освоїти нову професію.',
     name: 'Наталія Бондар',
     course: 'Тестування ПЗ',
-    image: 'images/Ellipse 34(2).png',
+    image: process.env.PUBLIC_URL + '/images/Ellipse 34(2).png',
   },
   {
     text: 'Курс дуже насичений, але подача дозволяє легко засвоїти матеріал.',
     name: 'Дмитро Сидоренко',
     course: 'Data Science',
-    image: 'images/Ellipse 34(4).png',
+    image: process.env.PUBLIC_URL + '/images/Ellipse 34(4).png',
   },
   {
     text: 'Навчання було продуктивним і цікавим. Дуже задоволений результатом!',
     name: 'Ірина Жук',
     course: 'Back-End розробка',
-    image: 'images/Ellipse 34(5).png',
+    image: process.env.PUBLIC_URL + '/images/Ellipse 34(5).png',
   },
 ];
 

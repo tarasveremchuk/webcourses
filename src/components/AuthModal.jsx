@@ -1,181 +1,234 @@
 import React, { useState } from "react";
+import { auth } from "../services/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updateProfile,
+} from "firebase/auth";
 
-const AuthModal = ({ isOpen, onClose }) => {
+const allowedDomains = ["gmail.com", "ukr.net", "icloud.com", "meta.ua", "i.ua", "hotmail.com"];
+  
+const AuthModal = ({ isOpen, onClose, setUserName }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
 
-  // Login values & errors
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [loginError, setLoginError] = useState("");
 
-  // Signup values & errors
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+  const [signupError, setSignupError] = useState("");
+  const resetForm = () => {
+    setLoginEmail("");
+    setLoginPassword("");
+    setLoginError("");
+    setSignupName("");
+    setSignupEmail("");
+    setSignupPassword("");
+    setSignupError("");
+    setHasTriedSubmit(false);
+  };
+  
+  const isValidEmail = (email) => {
+    // Строга перевірка на формат email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) return false;
+  
+    const domain = email.split("@")[1];
+    return allowedDomains.includes(domain);
+  };
+  
+  
 
-  const [signupNameError, setSignupNameError] = useState("");
-  const [signupEmailError, setSignupEmailError] = useState("");
-  const [signupPasswordError, setSignupPasswordError] = useState("");
+  const isValidName = (name) => /^[A-Za-zА-Яа-яІіЇїЄєҐґ'’\s-]+$/.test(name);
 
-  const isValidEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  const isValidName = (name) =>
-    /^[A-Za-zА-Яа-яІіЇїЄєҐґ'’\s-]+$/.test(name);
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    let valid = true;
+    setHasTriedSubmit(true);
+    setLoginError("");
 
     if (!isValidEmail(loginEmail)) {
-      setEmailError("Невалідний email");
-      valid = false;
-    } else {
-      setEmailError("");
+      setLoginError("Невалідна електронна адреса");
+      return;
     }
 
     if (loginPassword.trim().length === 0) {
-      setPasswordError("Пароль не може бути порожнім");
-      valid = false;
-    } else {
-      setPasswordError("");
+      setLoginError("Пароль не може бути порожнім");
+      return;
     }
 
-    if (!valid) return;
-
-    console.log("Login:", loginEmail);
-    onClose();
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      const user = userCredential.user;
+      setUserName(user.displayName || user.email);
+      onClose();
+    } catch (error) {
+      const code = error.code;
+      if (code === "auth/user-not-found") {
+        setLoginError("Користувача не знайдено");
+      } else if (code === "auth/wrong-password") {
+        setLoginError("Невірний пароль");
+      } else {
+        setLoginError("Помилка входу. Спробуйте ще раз.");
+      }
+    }
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-
-    let valid = true;
+    setHasTriedSubmit(true);
+    setSignupError("");
 
     if (!isValidName(signupName)) {
-      setSignupNameError("Ім’я не повинно містити цифри чи спецсимволи");
-      valid = false;
-    } else {
-      setSignupNameError("");
+      setSignupError("Ім’я не повинно містити цифри чи спецсимволи");
+      return;
     }
 
     if (!isValidEmail(signupEmail)) {
-      setSignupEmailError("Невалідний email");
-      valid = false;
-    } else {
-      setSignupEmailError("");
+      setSignupError("Невалідна електронна адреса");
+      return;
     }
 
-    if (signupPassword.length < 6) {
-      setSignupPasswordError("Пароль повинен містити щонайменше 6 символів");
-      valid = false;
-    } else {
-      setSignupPasswordError("");
+    if (signupPassword.length < 8 || signupPassword.length > 72) {
+      setSignupError("Пароль має бути від 8 до 72 символів");
+      return;
     }
 
-    if (!valid) return;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, signupEmail, signupPassword);
+      const user = userCredential.user;
+      await updateProfile(user, { displayName: signupName });
+      setUserName(signupName);
+      onClose();
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        setSignupError("Цей email вже використовується");
+      } else {
+        setSignupError("Помилка при реєстрації");
+      }
+    }
+  };
 
-    console.log("Signup:", signupEmail);
-    onClose();
+  const handleForgotPassword = async () => {
+    if (!loginEmail || !isValidEmail(loginEmail)) {
+      setLoginError("Введіть коректну електронну адресу");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, loginEmail);
+      setLoginError("Лист для відновлення паролю надіслано на вашу пошту");
+    } catch (error) {
+      setLoginError("Помилка при надсиланні листа. Спробуйте ще раз.");
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <span className="close-btn" onClick={onClose}>
-          &times;
-        </span>
-        <h2 id="modal-title">{isLogin ? "Sign In" : "Sign Up"}</h2>
+    <div className="auth-modal" onClick={() => {
+      resetForm();
+      onClose();
+    }}>
+      <div className="auth-modal-content" onClick={(e) => e.stopPropagation()}>
+      <span className="auth-close-btn" onClick={() => {
+  resetForm();
+  onClose();
+}}>&times;</span>
+        <h2 className="auth-title">{isLogin ? "З поверненням!" : "Реєстрація"}</h2>
 
         {isLogin ? (
-          <form id="auth-form" onSubmit={handleLogin}>
+          <form onSubmit={handleLogin}>
+            <label className="auth-label">Електронна пошта *</label>
             <input
-              type="email"
-              name="email"
-              placeholder="Email"
+              className="auth-input"
+              type="text"
               value={loginEmail}
-              onChange={(e) => {
-                setLoginEmail(e.target.value);
-                setEmailError(isValidEmail(e.target.value) ? "" : "Невалідний email");
-              }}
+              onChange={(e) => setLoginEmail(e.target.value)}
               required
             />
-            <p className="error-message">{emailError}</p>
-
+            <label className="auth-label">Пароль *</label>
             <input
+              className="auth-input"
               type="password"
-              name="password"
-              placeholder="Password"
               value={loginPassword}
-              onChange={(e) => {
-                setLoginPassword(e.target.value);
-                setPasswordError(e.target.value.trim() ? "" : "Пароль не може бути порожнім");
-              }}
+              onChange={(e) => setLoginPassword(e.target.value)}
               required
             />
-            <p className="error-message">{passwordError}</p>
-
-            <button type="submit">Login</button>
-            <p>
-              Don't have an account?{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsLogin(false); }}>
-                Sign Up
-              </a>
+         
+            <button type="submit" className="auth-submit-btn">Увійти</button>
+            {hasTriedSubmit && loginError && (
+              <p className="auth-error-msg">{loginError}</p>
+            )}
+            <p
+              className="auth-forgot"
+              onClick={handleForgotPassword}
+              style={{ cursor: "pointer", marginTop: "8px" }}
+            >
+              Забули пароль?
+            </p>
+            <p style={{ marginTop: "12px" }}>
+              Вперше на Coursera?{" "}
+              <span
+                style={{ textDecoration: "underline", cursor: "pointer", color: "blue" }}
+                onClick={() => {
+                  setIsLogin(false);
+                  setHasTriedSubmit(false);
+                  setLoginError("");
+                }}
+              >
+                Реєстрація
+              </span>
+            </p>
+            <p style={{ fontSize: "0.9em", color: "#666", marginTop: "6px" }}>
+              Навчайтеся у провідних університетів і компаній у зручний для вас час.
             </p>
           </form>
         ) : (
-          <form id="signup-form" onSubmit={handleSignup}>
+          <form onSubmit={handleSignup}>
+            <label className="auth-label">Повне ім’я *</label>
             <input
+              className="auth-input"
               type="text"
-              name="fullname"
-              placeholder="Full Name"
               value={signupName}
-              onChange={(e) => {
-                setSignupName(e.target.value);
-                setSignupNameError(isValidName(e.target.value) ? "" : "Ім’я не повинно містити цифри чи спецсимволи");
-              }}
+              onChange={(e) => setSignupName(e.target.value)}
               required
             />
-            <p className="error-message">{signupNameError}</p>
-
+            <label className="auth-label">Електронна пошта *</label>
             <input
-              type="email"
-              name="signup-email"
-              placeholder="Email"
+              className="auth-input"
+              type="text"
               value={signupEmail}
-              onChange={(e) => {
-                setSignupEmail(e.target.value);
-                setSignupEmailError(isValidEmail(e.target.value) ? "" : "Невалідний email");
-              }}
+              onChange={(e) => setSignupEmail(e.target.value)}
               required
             />
-            <p className="error-message">{signupEmailError}</p>
-
+            <label className="auth-label">Пароль *</label>
             <input
+              className="auth-input"
               type="password"
-              name="signup-password"
-              placeholder="Password"
               value={signupPassword}
-              onChange={(e) => {
-                setSignupPassword(e.target.value);
-                setSignupPasswordError(
-                  e.target.value.length >= 6 ? "" : "Пароль повинен містити щонайменше 6 символів"
-                );
-              }}
+              onChange={(e) => setSignupPassword(e.target.value)}
               required
             />
-            <p className="error-message">{signupPasswordError}</p>
-
-            <button type="submit">Register</button>
-            <p>
-              Already have an account?{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsLogin(true); }}>
-                Sign In
-              </a>
+            <p style={{ fontSize: "0.9em", color: "#666" }}>Від 8 до 72 символів</p>
+            {hasTriedSubmit && signupError && (
+              <p className="auth-error-msg">{signupError}</p>
+            )}
+            <button type="submit" className="auth-submit-btn">Зареєструватися</button>
+            <p style={{ marginTop: "12px" }}>
+              Ви вже в Coursera?{" "}
+              <span
+                style={{ textDecoration: "underline", cursor: "pointer", color: "blue" }}
+                onClick={() => {
+                  setIsLogin(true);
+                  setHasTriedSubmit(false);
+                  setSignupError("");
+                }}
+              >
+                Увійти
+              </span>
             </p>
           </form>
         )}

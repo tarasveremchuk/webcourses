@@ -3,7 +3,7 @@ import "../assets/styles/main.css";
 const PrivacyPolicy = () => {
   return (
     <>
-      <main className="content" style={{ padding: "4rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <main className="content" >
         <h1>Політика конфіденційності</h1>
 
         <h2>1. Мета</h2>

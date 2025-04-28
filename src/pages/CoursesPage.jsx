@@ -1,11 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Slider from "react-slider";
+import Pagination from "../components/Pagination";
+import { db,collection, getDocs } from "../services/firebase";
 
 function CoursesPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const query = new URLSearchParams(location.search);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+  const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const handlePageChange = (page) => {
+  setCurrentPage(page);
+};
+const [courses, setCourses] = useState([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
+useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const querySnapshot = await getDocs(collection(db, "courses"));
+
+      const coursesList = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title || "",
+          description: data.description || "",
+          category: data.category || "",
+          image: data.image || "",
+          language: data.language || "",
+          learn: data.learn || [],
+          skills: data.skills || [],
+          students: data.students || "0 учнів",
+          price: data.price || "0 грн",
+          reviews: data.reviews || [],
+          time: data.time || "",
+          videos: data.videos || "",
+          rating: data.rating || 0,
+        };
+      });
+
+      setCourses(coursesList);
+    } catch (err) {
+      console.error("Помилка при завантаженні курсів:", err);
+      setError("Не вдалося завантажити курси.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCourses();
+}, []);
+
 
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
@@ -29,371 +79,14 @@ function CoursesPage() {
     setSelectedLanguage(initialLanguages);
     setSelectedProductType(initialTypes);
   }, []);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, selectedLanguage, selectedProductType, showFreeOnly, priceRange]);
+  
   
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  const courses = [
-    {
-      image: "images/1.jpg",
-      category: "Веб-Розробка",
-      title: "HTML та CSS: Створення Сайтів з Нуля",
-      price: "999 грн",
-      time: "12 годин",
-      videos: "15 відео",
-      students: "1,500 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/2.jpg",
-      category: "Веб-Розробка",
-      title: "JavaScript для початківців",
-      price: "1499 грн",
-      time: "14 годин",
-      videos: "18 відео",
-      students: "2,300 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/3.jpg",
-      category: "Веб-Розробка",
-      title: "React.js: Побудова SPA",
-      price: "1899 грн",
-      time: "16 годин",
-      videos: "20 відео",
-      students: "3,100 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/4.jpg",
-      category: "Веб-Розробка",
-      title: "Workshop: створення лендінг-сторінки",
-      price: "Безкоштовно",
-      time: "5 годин",
-      videos: "7 відео",
-      students: "850 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/5.jpg",
-      category: "Веб-Розробка",
-      title: "Node.js та Express для серверної частини",
-      price: "1699 грн",
-      time: "13 годин",
-      videos: "17 відео",
-      students: "1,900 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/6.jpg",
-      category: "Веб-Розробка",
-      title: "Vue.js для новачків",
-      price: "1499 грн",
-      time: "11 годин",
-      videos: "14 відео",
-      students: "1,300 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/7.jpg",
-      category: "Python",
-      title: "Основи Python з практичними вправами",
-      price: "1299 грн",
-      time: "15 годин",
-      videos: "19 відео",
-      students: "2,000 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/8.jpg",
-      category: "Python",
-      title: "Python для аналізу даних",
-      price: "1399 грн",
-      time: "13 годин",
-      videos: "17 відео",
-      students: "1,800 учнів",
-      language: "Польська",
-    },
-    {
-      image: "images/9.jpg",
-      category: "Python",
-      title: "Автоматизація задач з Python",
-      price: "Безкоштовно",
-      time: "10 годин",
-      videos: "12 відео",
-      students: "2,700 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/10.jpg",
-      category: "Python",
-      title: "Веб-розробка з Django",
-      price: "1599 грн",
-      time: "14 годин",
-      videos: "16 відео",
-      students: "2,100 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/11.jpg",
-      category: "Python",
-      title: "Flask API з нуля",
-      price: "1299 грн",
-      time: "9 годин",
-      videos: "11 відео",
-      students: "1,600 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/12.jpg",
-      category: "UI/UX Дизайн",
-      title: "Основи UI-дизайну",
-      price: "1499 грн",
-      time: "8 годин",
-      videos: "10 відео",
-      students: "1,200 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/13.jpg",
-      category: "UI/UX Дизайн",
-      title: "UX-проєктування: від ідеї до прототипу",
-      price: "1599 грн",
-      time: "11 годин",
-      videos: "14 відео",
-      students: "900 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/14.jpg",
-      category: "UI/UX Дизайн",
-      title: "Figma для дизайнерів",
-      price: "Безкоштовно",
-      time: "6 годин",
-      videos: "8 відео",
-      students: "2,000 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/15.jpg",
-      category: "UI/UX Дизайн",
-      title: "Мобільний UX дизайн",
-      price: "1399 грн",
-      time: "9 годин",
-      videos: "12 відео",
-      students: "1,100 учнів",
-      language: "Польська",
-    },
-    {
-      image: "images/16.jpg",
-      category: "UI/UX Дизайн",
-      title: "Інтерактивні прототипи у Figma",
-      price: "999 грн",
-      time: "7 годин",
-      videos: "9 відео",
-      students: "1,000 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/17.jpg",
-      category: "Штучний Інтелект",
-      title: "Вступ до штучного інтелекту",
-      price: "1699 грн",
-      time: "14 годин",
-      videos: "16 відео",
-      students: "1,500 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/18.jpg",
-      category: "Штучний Інтелект",
-      title: "Machine Learning з Python",
-      price: "1999 грн",
-      time: "18 годин",
-      videos: "22 відео",
-      students: "2,400 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/19.jpg",
-      category: "Штучний Інтелект",
-      title: "ChatGPT для розробників",
-      price: "Безкоштовно",
-      time: "4 години",
-      videos: "6 відео",
-      students: "1,100 учнів",
-      language: "Польська",
-    },
-    {
-      image: "images/20.jpg",
-      category: "Штучний Інтелект",
-      title: "AI у бізнесі",
-      price: "1799 грн",
-      time: "12 годин",
-      videos: "15 відео",
-      students: "1,700 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/21.jpg",
-      category: "Штучний Інтелект",
-      title: "Комп'ютерний зір з OpenCV",
-      price: "1899 грн",
-      time: "16 годин",
-      videos: "19 відео",
-      students: "1,600 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/22.jpg",
-      category: "Бізнес",
-      title: "Початок власного бізнесу",
-      price: "1599 грн",
-      time: "10 годин",
-      videos: "13 відео",
-      students: "1,800 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/23.jpg",
-      category: "Бізнес",
-      title: "Маркетингова стратегія 101",
-      price: "1699 грн",
-      time: "11 годин",
-      videos: "14 відео",
-      students: "2,000 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/24.jpg",
-      category: "Бізнес",
-      title: "Управління фінансами для підприємців",
-      price: "1499 грн",
-      time: "9 годин",
-      videos: "11 відео",
-      students: "1,200 учнів",
-      language: "Польська",
-    },
-    {
-      image: "images/25.jpg",
-      category: "Бізнес",
-      title: "Цифровий маркетинг 101",
-      price: "1499 грн",
-      time: "12 годин",
-      videos: "15 відео",
-      students: "2,300 учнів",
-      language: "Польська",
-    },
-    {
-      image: "images/26.jpg",
-      category: "Бізнес",
-      title: "Бізнес-аналітика з Excel",
-      price: "1299 грн",
-      time: "8 годин",
-      videos: "10 відео",
-      students: "1,400 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/27.jpg",
-      category: "Особистісний Розвиток",
-      title: "Мистецтво публічних виступів",
-      price: "999 грн",
-      time: "7 годин",
-      videos: "10 відео",
-      students: "1,000 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/28.jpg",
-      category: "Особистісний Розвиток",
-      title: "Як підвищити продуктивність",
-      price: "1299 грн",
-      time: "8 годин",
-      videos: "11 відео",
-      students: "900 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/29.jpg",
-      category: "Особистісний Розвиток",
-      title: "Техніки тайм-менеджменту",
-      price: "Безкоштовно",
-      time: "6 годин",
-      videos: "8 відео",
-      students: "1,300 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/personal-4.png",
-      category: "Особистісний Розвиток",
-      title: "Майндфулнес для щоденного життя",
-      price: "1199 грн",
-      time: "5 годин",
-      videos: "7 відео",
-      students: "800 учнів",
-      language: "Польська",
-    },
-    {
-      image: "images/personal-5.png",
-      category: "Особистісний Розвиток",
-      title: "Емоційний інтелект",
-      price: "1399 грн",
-      time: "9 годин",
-      videos: "12 відео",
-      students: "1,500 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/bonus-1.png",
-      category: "Бізнес",
-      title: "Побудова бренду",
-      price: "1599 грн",
-      time: "10 годин",
-      videos: "13 відео",
-      students: "1,800 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/bonus-2.png",
-      category: "UI/UX Дизайн",
-      title: "Формування дизайн-систем",
-      price: "1499 грн",
-      time: "10 годин",
-      videos: "13 відео",
-      students: "1,600 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/python-1.webp",
-      category: "Python",
-      title: "Pandas та аналіз даних",
-      price: "1399 грн",
-      time: "11 годин",
-      videos: "14 відео",
-      students: "2,100 учнів",
-      language: "Українська",
-    },
-    {
-      image: "images/bonus-4.png",
-      category: "Штучний Інтелект",
-      title: "NLP: обробка природної мови",
-      price: "1699 грн",
-      time: "13 годин",
-      videos: "17 відео",
-      students: "1,800 учнів",
-      language: "Англійська",
-    },
-    {
-      image: "images/bonus-5.png",
-      category: "Особистісний Розвиток",
-      title: "Кар'єрне планування",
-      price: "Безкоштовно",
-      time: "6 годин",
-      videos: "9 відео",
-      students: "1,100 учнів",
-      language: "Українська",
-    }
-  ];
+
   
 
   const handleCheckboxChange = (value, currentList, setList) => {
@@ -492,7 +185,8 @@ function CoursesPage() {
       parseInt(a.students.replace(/[^\d]/g, ""))
     );
   });
-
+  const currentCourses = sortedCourses.slice(indexOfFirstItem, indexOfLastItem);
+const totalPages = Math.ceil(sortedCourses.length / itemsPerPage);
   useEffect(() => {
     const storedCourses = JSON.parse(localStorage.getItem("myCourses")) || [];
     setMyCourses(storedCourses);
@@ -785,10 +479,11 @@ function CoursesPage() {
 
         <div className="courses">
           {sortedCourses.length > 0 ? (
-            sortedCourses.map((course, index) => {
-              const buttonState = getButtonState(course.title);
+  currentCourses.map((course, index) => {
+    const buttonState = getButtonState(course.title);
               return (
-                <article className="course" key={index}>
+                <article className="course" key={index} onClick={() => navigate(`/course_info/${encodeURIComponent(course.title)}`)}
+                style={{ cursor: "pointer" }}>
                   <img src={course.image} alt={course.title} />
                   <div className="course-info">
                     <p className="category">{course.category}</p>
@@ -797,32 +492,22 @@ function CoursesPage() {
                   <p className="price">{course.price}</p>
                   <div className="details">
                     <div className="detail-item">
-                    <img src="images/Group.png" alt="Time" />
+                    <img src={process.env.PUBLIC_URL +"/images/Group.png"} alt="Time" />
 
                       <p>{course.time}</p>
                     </div>
                     <div className="detail-item">
-                    <img src="images/video-svgrepo-com 1.png" alt="Videos" />
+                    <img src={process.env.PUBLIC_URL +"/images/video-svgrepo-com 1.png"} alt="Videos" />
 
                       <p>{course.videos}</p>
                     </div>
                     <div className="detail-item">
-                    <img src="images/download-svgrepo-com 1.png" alt="Students" />
+                    <img src={process.env.PUBLIC_URL +"/images/download-svgrepo-com 1.png"} alt="Students" />
 
                       <p>{course.students}</p>
                     </div>
                   </div>
-                  <button
-                    className="join-btn"
-                    style={{
-                      background: buttonState.background,
-                      cursor: buttonState.disabled ? "not-allowed" : "pointer",
-                    }}
-                    disabled={buttonState.disabled}
-                    onClick={() => handleJoin(course)}
-                  >
-                    {buttonState.text}
-                  </button>
+                  
                 </article>
               );
             })
@@ -830,6 +515,14 @@ function CoursesPage() {
             <p className="no-results">Нічого не знайдено.</p>
           )}
         </div>
+        {totalPages > 1 && (
+  <Pagination
+  totalPages={totalPages}
+  currentPage={currentPage}
+  onPageChange={handlePageChange}
+/>
+)}
+
       </section>
     </div>
   );

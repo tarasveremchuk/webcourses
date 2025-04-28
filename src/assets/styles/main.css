@@ -16,6 +16,8 @@
   }
 html{
     width:100%;
+    background: #fdf8ee;
+
 }
 .body{
     background: #fdf8ee;
@@ -25,6 +27,7 @@ html{
     background: #fdf8ee;
 
 }
+
 .menu-toggle {
     display: none;
   
@@ -84,7 +87,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #fdf8ee;
+    background: #f8f0e0;
     transition: all 0.3s ease;
     padding-left: 2%;
     padding-right: 2%;
@@ -729,7 +732,7 @@ header {
 }
 /* Основний стиль футера */
 .footer {
-    background-color: #fdf8ee;
+    background-color: #f8f0e0;
     color: black;
     padding: 40px 20px;
     font-family: Arial, sans-serif;
@@ -2331,12 +2334,13 @@ svg {
     overflow-y: auto;
     border-radius: 10px;
     position: relative;
-  } */
-  
+  }
+   */
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 3rem;
   }
   
   .close-modal {
@@ -2375,3 +2379,515 @@ svg {
       margin-left: 10px;
     }
   }
+
+  .user-button {
+    background-color: #4D2C5E;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .user-button:hover {
+    background-color: #45a049;
+  }
+  .profile-container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+    font-family: sans-serif;
+  }
+  
+  .profile-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+  
+  .avatar-section input {
+    margin-top: 0.5rem;
+  }
+  
+  .user-info, .course-section, .stats-section {
+    margin-top: 1.5rem;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+
+  .logout-icon {
+    font-size: 24px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  
+  .logout-icon:hover {
+    color: #ff4d4f;
+    transform: scale(1.1);
+  }
+  
+
+  .my-courses-page {
+    padding: 20px;
+    margin-top: 10rem;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .courses-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  
+  .course-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s;
+  }
+  
+  .course-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .course-card-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .course-description {
+    font-size: 0.95rem;
+    color: #555;
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .course-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.85rem;
+    color: #777;
+    margin: 10px 0;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 10px;
+    margin: 10px 0;
+  }
+  
+  .progress {
+    height: 10px;
+    background-color: #4caf50;
+  }
+  
+  .progress-text {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  
+  .continue-btn {
+    padding: 8px 12px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: auto;
+    transition: background 0.2s;
+  }
+  
+  .continue-btn:hover {
+    background: #2980b9;
+  }
+  
+
+
+  .auth-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .auth-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+  
+  .auth-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .auth-title {
+    margin-bottom: 24px;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  
+  .auth-label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  
+  .auth-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  
+  .auth-submit-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #0056b3;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .auth-submit-btn:hover {
+    background-color: #00419c;
+  }
+  
+  .auth-error-msg {
+    color: #d32f2f;
+    background-color: #fce4ec;
+    border: 1px solid #f8bbd0;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 5rem;
+  }
+  
+  .pagination button {
+    color: black;
+    border: none;
+    width: 30px; /* фіксована вузька ширина */
+    height: 30px; /* щоб були квадратні */
+    margin: 0 2px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    background: none;
+    font-size: 14px;
+    border-radius: 4px;
+    line-height: 30px; /* вирівнювання тексту по центру */
+    text-align: center;
+    padding: 0; /* взагалі прибираємо паддінг */
+  }
+  
+  .pagination button.active {
+    background-color: orange;
+    color: white;
+  }
+  
+  .pagination button:hover:not(.active) {
+    background-color: #ddd;
+  }
+  
+  .pagination button:disabled {
+    color: gray;
+    cursor: not-allowed;
+  }
+  
+
+
+  .course-info-page {
+    padding: 2rem;
+  }
+  
+  .course-header h1 {
+    font-size: 2rem;
+  }
+  
+  .short-description {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #555;
+  }
+  
+  .join-btn {
+    margin-top: 1rem;
+    background-color: #e67e22;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .students-count {
+    margin-top: 0.5rem;
+    color: #888;
+  }
+  
+  .info-banner {
+    background-color: #f5f5f5;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-radius: 10px;
+  }
+  
+  .info-banner h3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .course-meta p {
+    margin: 0.3rem 0;
+  }
+  
+  .what-you-learn {
+    margin-top: 2rem;
+  }
+  
+  .what-you-learn ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+  }
+  
+
+
+  .course-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .course-title {
+    font-size: 2.5rem;
+    margin-top: 5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .course-description {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 2rem;
+  }
+  
+  .enroll-button {
+    padding: 0.8rem 2rem;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+  }
+  
+  .students-count {
+    color: #777;
+    margin-bottom: 2rem;
+  }
+  
+  .course-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .section-divider {
+    width: 100%;
+    max-width: 800px;
+    height: 2px;
+    background-color: #eee;
+    margin: 3rem auto 2rem auto;
+  }
+  .section-divider {
+    width: 120%;
+    max-width: 950px;
+    height: 2px;
+    background-color: #eee;
+    margin: 3rem auto 2rem auto;
+  }
+  
+  .learning-outcomes {
+    margin-bottom: 2rem;
+  }
+  
+  .learning-outcomes h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .learning-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Дві колонки */
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    color: #555;
+  }
+  
+  .learning-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .learning-item box-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  
+  .skills-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .skill-item {
+    background-color: #eee;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+  }
+  
+  .feedback-section {
+  margin-top: 3rem;
+}
+
+.feedback-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.feedback-input,
+.feedback-textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.feedback-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.feedback-submit {
+  align-self: flex-start;
+  padding: 0.7rem 1.5rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.feedback-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.feedback-author {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.feedback-text {
+  color: #555;
+  font-size: 1rem;
+}
+.feedback-date {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 0.5rem;
+  }
+  
