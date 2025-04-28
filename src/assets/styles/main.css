@@ -394,7 +394,6 @@ header {
   
   .filter-section label {
     display: flex;
-    align-items: center;
     flex-direction: row-reverse; /* Інверсія порядку: чекбокс справа */
     gap: 10px; /* Відстань між текстом і чекбоксом */
     font-size: 0.95em;
@@ -402,12 +401,14 @@ header {
     cursor: pointer;
     padding: 6px 0;
     border-bottom: 1px solid #f2f2f2;
+    justify-content: space-between;
   }
   
   .filter-section input[type="checkbox"] {
     margin: 0;
     transform: scale(1.2);
     accent-color: #4D2C5E;
+    width: 20px;
   }
   
   
