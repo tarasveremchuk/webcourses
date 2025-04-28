@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/webcourses/static/css/main.c49d12c3.css",
+    "main.css": "/webcourses/static/css/main.6f269ca4.css",
     "main.js": "/webcourses/static/js/main.5c912deb.js",
     "static/media/boxicons.svg": "/webcourses/static/media/boxicons.9e2b21b135bc7d4c803f.svg",
     "static/media/boxicons.eot": "/webcourses/static/media/boxicons.65a8ce52fc5427e8f94d.eot",
@@ -11,11 +11,11 @@
     "static/media/Group 327.png": "/webcourses/static/media/Group 327.862c465bb8b7d568e4bb.png",
     "static/media/logo.png": "/webcourses/static/media/logo.bd7281bea5f71bec7123.png",
     "index.html": "/webcourses/index.html",
-    "main.c49d12c3.css.map": "/webcourses/static/css/main.c49d12c3.css.map",
+    "main.6f269ca4.css.map": "/webcourses/static/css/main.6f269ca4.css.map",
     "main.5c912deb.js.map": "/webcourses/static/js/main.5c912deb.js.map"
   },
   "entrypoints": [
-    "static/css/main.c49d12c3.css",
+    "static/css/main.6f269ca4.css",
     "static/js/main.5c912deb.js"
   ]
 }
