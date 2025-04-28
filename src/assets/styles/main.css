@@ -623,12 +623,13 @@ header {
     margin-bottom: 1%;
 }
 
+
 .intro-text {
     font-size: 1.5vw;
     color: #555;
+    margin-top: 10px; /* краще робити відступ зверху */
     margin-bottom: 3%;
-}
-
+  }
 .courses {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -2192,11 +2193,11 @@ svg {
 
   .courses-head {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; /* ставимо елементи в стовпчик */
+    justify-content: center; /* вирівнюємо по вертикалі */
+    align-items: center; /* вирівнюємо по горизонталі */
     margin-bottom: 20px;
   }
-  
   .search-sort-wrapper {
     display: flex;
     justify-content: space-between;
