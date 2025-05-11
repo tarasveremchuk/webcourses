@@ -1,7 +1,8 @@
 {
   "files": {
-    "main.css": "/webcourses/static/css/main.6f269ca4.css",
-    "main.js": "/webcourses/static/js/main.5c912deb.js",
+    "main.css": "/webcourses/static/css/main.5189932d.css",
+    "main.js": "/webcourses/static/js/main.19a1059b.js",
+    "static/js/437.9c2984cd.chunk.js": "/webcourses/static/js/437.9c2984cd.chunk.js",
     "static/media/boxicons.svg": "/webcourses/static/media/boxicons.9e2b21b135bc7d4c803f.svg",
     "static/media/boxicons.eot": "/webcourses/static/media/boxicons.65a8ce52fc5427e8f94d.eot",
     "static/media/boxicons.woff": "/webcourses/static/media/boxicons.d12afc36557395143e4b.woff",
@@ -11,11 +12,12 @@
     "static/media/Group 327.png": "/webcourses/static/media/Group 327.862c465bb8b7d568e4bb.png",
     "static/media/logo.png": "/webcourses/static/media/logo.bd7281bea5f71bec7123.png",
     "index.html": "/webcourses/index.html",
-    "main.6f269ca4.css.map": "/webcourses/static/css/main.6f269ca4.css.map",
-    "main.5c912deb.js.map": "/webcourses/static/js/main.5c912deb.js.map"
+    "main.5189932d.css.map": "/webcourses/static/css/main.5189932d.css.map",
+    "main.19a1059b.js.map": "/webcourses/static/js/main.19a1059b.js.map",
+    "437.9c2984cd.chunk.js.map": "/webcourses/static/js/437.9c2984cd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6f269ca4.css",
-    "static/js/main.5c912deb.js"
+    "static/css/main.5189932d.css",
+    "static/js/main.19a1059b.js"
   ]
 }
